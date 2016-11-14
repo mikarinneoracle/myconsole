@@ -1,0 +1,19 @@
+<h2>Schedule</h2>
+<p>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Job</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="job in jobs">
+			<td> <a ng-href="#/{{$index}}"> {{ job }}   </a> </td>
+    </tr>
+		<tr ng-if="jobs.length === 0">
+			<td><strong>No jobs found, start by <a ng-href="#/add">adding new</a> </strong></td>
+		</tr>
+  </tbody>
+</table>
+
+<a ng-href="#/add"><button class="btn btn-default">Add new</button></a>

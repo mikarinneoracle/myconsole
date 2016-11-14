@@ -1,0 +1,17 @@
+{
+  "name": "sample-console",
+  "version": "1.0.0",
+  "description": "Mika's test Oracle Cloud console",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Mika Rinne, ORACLE CORP.",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "croner": "^1.1.12",
+    "express": "^4.14.0",
+    "request": "^2.78.0"
+  }
+}
