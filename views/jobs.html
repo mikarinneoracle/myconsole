@@ -16,7 +16,12 @@
       <td> {{ job.service }} </td>
       <td> {{ job.state }} </td>
       <td>
-          <a ng-href="#/{{$index}}"><button class="btn btn-default">Stop</button></a>
+          <div ng-if="job.state == 'running'">
+            <a ng-href="#/{{$index}}"><button class="btn btn-warning">Pause</button></a>
+          </div>
+          <div ng-if="job.state == 'paused'">
+            <a ng-href="#/{{$index}}"><button class="btn btn-success">Resume</button></a>
+          </div>
       </td>
     </tr>
 		<tr ng-if="jobs.length === 0">
@@ -25,4 +30,15 @@
   </tbody>
 </table>
 
-<a ng-href="#/add"><button class="btn btn-default">Add new</button></a>
+<div ng-if="jobs.length < 5">
+  <a ng-href="#/add"><button class="btn btn-primary">Add new</button></a>
+</div>
+
+<div ng-if="jobs.length === 5">
+  <a ng-href="#/add"><button class="btn btn-primary disabled">Add new</button></a>
+</div>
+
+<p>
+<br>
+
+{{ 5 - jobs.length }} of 5 jobs available
