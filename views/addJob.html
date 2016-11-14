@@ -1,0 +1,30 @@
+<div class="col-md-6 pull-left">
+  <div>
+    <span class="large">Add a new job</span>
+  </div>
+	<p>
+	<br>
+
+  <div>
+		<form ng-submit="add(job)" ng-controller="jobController">
+			<div class="form-group">
+				<label for="cron">Cron</label>
+			  <input class="form-control" type="text" id="cron" ng-model="job.cron" name="cron" placeholder="*/5 * * * * *"/>
+      </div>
+      <div class="form-group">
+				<label for="method">Operation</label>
+			  <input class="form-control" type="text" id="operation" ng-model="job.operation" name="operation" placeholder="operation"/>
+			</div>
+      <div class="form-group">
+				<label for="method">Service</label>
+			  <input class="form-control" type="text" id="service" ng-model="job.service" name="service" placeholder="service name"/>
+			</div>
+			<button class="btn btn-primary" type="submit" value="add">Add</button>
+      <a ng-href="#/"><button class="btn btn-default" type="button" value="cancel">Cancel</button></a>
+		</form>
+  </div>
+</div>
+
+<script>
+$("#cron").focus();
+</script>

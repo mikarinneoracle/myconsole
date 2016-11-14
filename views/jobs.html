@@ -3,12 +3,21 @@
 <table class="table table-hover">
   <thead>
     <tr>
-      <th>Job</th>
+      <th>Job cron</th>
+      <th>Operation</th>
+      <th>Service</th>
+      <th colspan="2">State</th>
     </tr>
   </thead>
   <tbody>
     <tr ng-repeat="job in jobs">
-			<td> <a ng-href="#/{{$index}}"> {{ job }}   </a> </td>
+			<td> {{ job.cron }} </td>
+      <td> {{ job.operation }} </td>
+      <td> {{ job.service }} </td>
+      <td> {{ job.state }} </td>
+      <td>
+          <a ng-href="#/{{$index}}"><button class="btn btn-default">Stop</button></a>
+      </td>
     </tr>
 		<tr ng-if="jobs.length === 0">
 			<td><strong>No jobs found, start by <a ng-href="#/add">adding new</a> </strong></td>

@@ -8,4 +8,30 @@ app.controller('jobController', function($location, $http, $rootScope, $scope, $
 		});
 	}
 
+	$scope.add = function(job) {
+		$http.put('/jobs', job)
+		.success(function(response, err) {
+			var location = '/';
+			$location.path(location);
+			return;
+		})
+		.error(function(response, err) {
+			alert(response.error);
+			return;
+		})
+	}
+
+	if ($routeParams.id) {
+		$http.post('/state/' + $routeParams.id)
+		.success(function(response, err) {
+			var location = '/';
+			$location.path(location);
+			return;
+		})
+		.error(function(response, err) {
+			alert(response.error);
+			return;
+		})
+	}
+
 });

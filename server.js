@@ -8,6 +8,10 @@ var app = express();
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
 
+var RUNNING = "running";
+var STOPPED = "stopped";
+var PAUSED = "paused";
+
 app.get('/', function(req,res){
 	res.send('index.html')
 });
@@ -54,32 +58,52 @@ var jobCount = 0;
 var jobs = [];
 var scheduler = [];
 var scheduledJobs = [];
-jobs[0] = '*/5 * * * * *';
-jobs[1] = '*/10 * * * * *';
-jobs[2] = '*/2 * * * * *';
-jobs[3] = '*/15 * * * * *';
-jobs[4] = '*/3 * * * * *';
 
 app.get('/jobs', function(req, res) {
-  console.log(jobs);
   res.send({ jobs: jobs });
 });
 
-app.get('/add', function(req, res) {
+app.put('/jobs', function(req, res) {
   if(jobCount == jobMaxCount)
   {
-    return res.status(400).json( { error: "JOB MAX COUNT REACHED" });
+    return res.status(400).json( { error: "Job max count " + jobMaxCount + " reached." });
   }
-  scheduler[jobCount] = cron(jobs[jobCount]);
-  scheduledJobs[jobCount] = scheduler[jobCount].schedule(callBacks[jobCount]);
+	var job = req.body;
+	jobs[jobCount] = {"cron" : job.cron, "operation" : job.operation, "service" : job.service, "state" : RUNNING};
+	try {
+		  scheduler[jobCount] = cron(job.cron);
+			scheduledJobs[jobCount] = scheduler[jobCount].schedule(callBacks[jobCount]);
+	} catch(err) {
+		console.log(err.message);
+		return res.status(400).json( { error: err.message });
+	}
   jobCount++;
-  console.log(jobCount);
+  res.send({ jobs: jobs });
+});
+
+app.post('/state/:id', function(req, res) {
+	var id = req.params.id;
+	console.log(id);
+	try {
+			if(jobs[id].state == RUNNING)
+			{
+			  scheduledJobs[id].pause();
+				jobs[id].state = PAUSED;
+			} else {
+				scheduledJobs[id].resume();
+				jobs[id].state = RUNNING;
+			}
+	} catch(err) {
+		console.log(err.message);
+		return res.status(400).json( { error: err.message });
+	}
   res.send({ jobs: jobs });
 });
 
 function callBack_0()
 {
-    console.log('handle job 0');
+		var job = jobs[0]
+    console.log('handle job 0 ' + job.operation);
     /*
     request(options_GET, function (error, response, body) {
       console.log(response.statusCode);
@@ -89,24 +113,28 @@ function callBack_0()
 
 function callBack_1()
 {
-    console.log('handle job 1');
+		var job = jobs[1]
+		console.log('handle job 1 ' + job.operation);
 }
 
 function callBack_2()
 {
-    console.log('handle job 2');
+		var job = jobs[2]
+		console.log('handle job 2 ' + job.operation);
 }
 
 function callBack_3()
 {
-    console.log('handle job 3');
+		var job = jobs[3]
+		console.log('handle job 3 ' + job.operation);
 }
 
 function callBack_4()
 {
-    console.log('handle job 4');
+		var job = jobs[4]
+		console.log('handle job 4 ' + job.operation);
 }
 
 app.listen(port, function() {
-  console.log('server listening on port ' + port);
+  	console.log('server listening on port ' + port);
 });
