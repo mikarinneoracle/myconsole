@@ -57,7 +57,7 @@ app.post('/jobs', function(req, res) {
 		jobs[job.id] = {"name" : job.name, "cron" : job.cron, "operation" : job.operation,
 											"endpoint" : job.endpoint, "service" : job.service, "state" : RUNNING,
 											"tenant" : job.tenant, "status" : "", "auth" : auth, "options" : options,
-											"message" : ""
+											"message" : "", "id" : job.id
 										};
 
 		console.log(jobs);
