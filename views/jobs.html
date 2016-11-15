@@ -18,20 +18,20 @@
   </thead>
   <tbody>
     <tr ng-repeat="job in jobs">
-      <td> {{ job.name }} </td>
+      <td> <a ng-href="#/{{ job.id }}"> {{ job.name }} </a> </td>
 			<td> {{ job.cron }} </td>
       <td> {{ job.operation }} </td>
       <td> {{ job.service }} </td>
       <td> {{ job.state }} </td>
       <td>
           <div ng-if="job.state == 'running'">
-            <a ng-href="#/{{$index}}"><button class="btn btn-warning">Pause</button></a>
+            <a ng-click="changeState($index)"><button class="btn btn-warning">Pause</button></a>
           </div>
           <div ng-if="job.state == 'paused'">
-            <a ng-href="#/{{$index}}"><button class="btn btn-success">Resume</button></a>
+            <a ng-click="changeState($index)"><button class="btn btn-success">Resume</button></a>
           </div>
       </td>
-      <td> {{ job.status }} </td>
+      <td><span class="badge" style="cursor: pointer" ng-click="showAlert($index)">{{ job.status }}</badge></td>
     </tr>
 		<tr ng-if="jobs.length === 0">
 			<td><strong>No jobs found, start by <a ng-href="#/add">adding new</a> </strong></td>

@@ -14,7 +14,7 @@ var app = angular
         controller: 'jobController'
       })
       .when('/:id', {
-        templateUrl: '../views/jobs.html',
+        templateUrl: '../views/editJob.html',
         controller: 'jobController'
       })
 

@@ -4,12 +4,12 @@ app.controller('jobController', function($location, $http, $rootScope, $scope, $
 	{
 		$http.get('/jobs').success(function(response, err) {
 			$scope.jobs = response['jobs'];
-			console.log("FOUND " + $scope.jobs.length + " JOBS");
 		});
 	}
 
-	$scope.add = function(job) {
-		$http.put('/jobs', job)
+	$scope.save = function(job) {
+		console.log(job);
+		$http.post('/jobs', job)
 		.success(function(response, err) {
 			var location = '/';
 			$location.path(location);
@@ -22,8 +22,16 @@ app.controller('jobController', function($location, $http, $rootScope, $scope, $
 	}
 
 	if ($routeParams.id) {
-		$http.post('/state/' + $routeParams.id)
+			// Edit job
+			$http.get('/job/' + $routeParams.id).success(function(response, err) {
+				$scope.job = response['job'];
+			});
+	}
+
+	$scope.changeState = function (id) {
+		$http.post('/state/' + id)
 		.success(function(response, err) {
+			$scope.jobs = response['jobs'];
 			var location = '/';
 			$location.path(location);
 			return;
@@ -34,4 +42,10 @@ app.controller('jobController', function($location, $http, $rootScope, $scope, $
 		})
 	}
 
+	$scope.showAlert = function (id) {
+			$http.get('/jobs').success(function(response, err) {
+				var jobs = response['jobs'];
+				alert(jobs[id].message);
+			});
+  }
 });

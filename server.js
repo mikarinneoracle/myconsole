@@ -34,12 +34,49 @@ app.get('/jobs', function(req, res) {
   res.send({ jobs: jobs });
 });
 
-app.put('/jobs', function(req, res) {
+app.get('/job/:id', function(req, res) {
+	var id = req.params.id;
+  res.send({ job: jobs[id] });
+});
+
+app.post('/jobs', function(req, res) {
+	var job = req.body;
+	if(job.id != null)
+	{
+		var auth = getAuth(job.user, job.pass);
+		var options = "";
+		if(job.operation == 'START')
+		{
+			options = getOptionsStart(job.endpoint, job.service, auth, job.tenant);
+		} else if (job.operation == 'STOP')
+		{
+			options = getOptionsStop(job.endpoint, job.service, auth, job.tenant);
+		} else {
+			options = getOptionsInfo(job.endpoint, job.service, auth, job.tenant);
+		}
+		jobs[job.id] = {"name" : job.name, "cron" : job.cron, "operation" : job.operation,
+											"endpoint" : job.endpoint, "service" : job.service, "state" : RUNNING,
+											"tenant" : job.tenant, "status" : "", "auth" : auth, "options" : options,
+											"message" : ""
+										};
+
+		console.log(jobs);
+										/*
+		try {
+			  scheduler[job.id] = cron(job.cron);
+				scheduledJobs[job.id] = scheduler[job.id].schedule(callBacks[job.id]);
+		} catch(err) {
+			console.log(err.message);
+			return res.status(400).json( { error: err.message });
+		}
+		*/
+	  res.send({ jobs: jobs });
+		return;
+	}
   if(jobCount == jobMaxCount)
   {
     return res.status(400).json( { error: "Job max count " + jobMaxCount + " reached." });
   }
-	var job = req.body;
 	var auth = getAuth(job.user, job.pass);
 	var options = "";
 	if(job.operation == 'START')
@@ -53,7 +90,8 @@ app.put('/jobs', function(req, res) {
 	}
 	jobs[jobCount] = {"name" : job.name, "cron" : job.cron, "operation" : job.operation,
 										"endpoint" : job.endpoint, "service" : job.service, "state" : RUNNING,
-										"tenant" : job.tenant, "status" : "", "auth" : auth, "options" : options
+										"tenant" : job.tenant, "status" : "", "auth" : auth, "options" : options,
+										"message" : "", "id" : jobCount
 									};
 	try {
 		  scheduler[jobCount] = cron(job.cron);
@@ -148,11 +186,13 @@ function handleJob(job)
 		{
 				console.log(response.statusCode);
 				job.status = response.statusCode;
+				job.message = body;
 		}
 		if(error)
 		{
 				 console.log(error);
-				 job.status = error.message;
+				 job.status = 'ERR';
+				 job.message = error.message;
 		}
 		if(body) console.log(body);
 	});

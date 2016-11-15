@@ -1,12 +1,13 @@
 <div class="col-md-8 pull-left">
   <div>
-    <span class="large">Add a new job for Database or Java Cloud Service</span>
+    <span class="large">Edit job</span>
   </div>
 	<p>
 	<br>
 
   <div>
 		<form ng-submit="save(job)" ng-controller="jobController">
+      <input type="hidden" name="id" ng-model="job.id">
       <div class="form-group">
 				<label for="cron">Name</label>
 			  <input class="form-control" type="text" id="name" ng-model="job.name" name="name" placeholder="name"/>
@@ -43,7 +44,7 @@
 				<label for="method">Password</label>
 			  <input class="form-control" type="password" id="password" ng-model="job.pass" name="password" placeholder="password"/>
 			</div>
-			<button class="btn btn-primary" type="submit" value="add">Add</button>
+			<button class="btn btn-primary" type="submit" value="add">Save</button>
       <a ng-href="#/"><button class="btn btn-default" type="button" value="cancel">Cancel</button></a>
 		</form>
   </div>
