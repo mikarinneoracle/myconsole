@@ -1,23 +1,47 @@
-<div class="col-md-6 pull-left">
+<div class="col-md-8 pull-left">
   <div>
-    <span class="large">Add a new job</span>
+    <span class="large">Add a new job for Database or Java Cloud Service</span>
   </div>
 	<p>
 	<br>
 
   <div>
 		<form ng-submit="add(job)" ng-controller="jobController">
+      <div class="form-group">
+				<label for="cron">Name</label>
+			  <input class="form-control" type="text" id="name" ng-model="job.name" name="name" placeholder="name"/>
+      </div>
 			<div class="form-group">
-				<label for="cron">Cron</label>
+				<label for="cron">Cron mask, for example */30 * * * * *</label>
 			  <input class="form-control" type="text" id="cron" ng-model="job.cron" name="cron" placeholder="*/5 * * * * *"/>
       </div>
       <div class="form-group">
 				<label for="method">Operation</label>
-			  <input class="form-control" type="text" id="operation" ng-model="job.operation" name="operation" placeholder="operation"/>
+			  <select class="form-control" id="operation" ng-model="job.operation" name="operation">
+          <option value="INFO">INFO</option>
+          <option value="START">START</option>
+          <option value="STOP">STOP</option>
+        </select>
+      </div>
+      <div class="form-group">
+				<label for="method">Service (DBaaS or JaaS)</label>
+			  <input class="form-control" type="text" id="service" ng-model="job.service" name="service" placeholder="service name"/>
 			</div>
       <div class="form-group">
-				<label for="method">Service</label>
-			  <input class="form-control" type="text" id="service" ng-model="job.service" name="service" placeholder="service name"/>
+				<label for="method">Endpoint url</label>
+			  <input class="form-control" type="text" id="endpoint" ng-model="job.endpoint" name="endpoint" placeholder="endpoint url"/>
+			</div>
+      <div class="form-group">
+				<label for="method">Tenant (Domain)</label>
+			  <input class="form-control" type="text" id="tenant" ng-model="job.tenant" name="tenant" placeholder="tenant"/>
+			</div>
+      <div class="form-group">
+				<label for="method">Username</label>
+			  <input class="form-control" type="text" id="username" ng-model="job.user" name="username" placeholder="username"/>
+			</div>
+      <div class="form-group">
+				<label for="method">Password</label>
+			  <input class="form-control" type="password" id="password" ng-model="job.pass" name="password" placeholder="password"/>
 			</div>
 			<button class="btn btn-primary" type="submit" value="add">Add</button>
       <a ng-href="#/"><button class="btn btn-default" type="button" value="cancel">Cancel</button></a>
@@ -26,5 +50,5 @@
 </div>
 
 <script>
-$("#cron").focus();
+$("#name").focus();
 </script>

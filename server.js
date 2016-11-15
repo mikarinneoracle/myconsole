@@ -16,35 +16,6 @@ app.get('/', function(req,res){
 	res.send('index.html')
 });
 
-var auth = new Buffer("cloud.admin" + ':' + "sOotHing@8CorD").toString('base64');
-
-var url = 'https://dbcs.emea.oraclecloud.com/paas/service/dbcs/api/v1.1/instances/gse00000504/phpdb';
-
-var options_GET = {
-    url: url,
-    method: 'GET',
-    headers: {
-        Authorization: 'Basic ' + auth,
-        'Content-Type': 'application/json',
-        'X-ID-TENANT-NAME': 'gse00000504'
-    }
-};
-
-var options_POST = {  // POST
-    //url: 'https://apaas.europe.oraclecloud.com/paas/service/apaas/api/v1.1/apps/gse00000504/App1/stop',
-    url: url,
-    method: 'POST',
-    headers: {
-        Authorization: 'Basic ' + auth,
-        'Content-Type': 'application/json',
-        'X-ID-TENANT-NAME': 'gse00000504'
-    },
-    body: {
-        'lifecycleState' : 'Start'
-    },
-    json: true
-};
-
 var jobMaxCount = 5;
 var callBacks = [
     function() { callBack_0() },
@@ -69,7 +40,21 @@ app.put('/jobs', function(req, res) {
     return res.status(400).json( { error: "Job max count " + jobMaxCount + " reached." });
   }
 	var job = req.body;
-	jobs[jobCount] = {"cron" : job.cron, "operation" : job.operation, "service" : job.service, "state" : RUNNING};
+	var auth = getAuth(job.user, job.pass);
+	var options = "";
+	if(job.operation == 'START')
+	{
+		options = getOptionsStart(job.endpoint, job.service, auth, job.tenant);
+	} else if (job.operation == 'STOP')
+	{
+		options = getOptionsStop(job.endpoint, job.service, auth, job.tenant);
+	} else {
+		options = getOptionsInfo(job.endpoint, job.service, auth, job.tenant);
+	}
+	jobs[jobCount] = {"name" : job.name, "cron" : job.cron, "operation" : job.operation,
+										"endpoint" : job.endpoint, "service" : job.service, "state" : RUNNING,
+										"tenant" : job.tenant, "status" : "", "auth" : auth, "options" : options
+									};
 	try {
 		  scheduler[jobCount] = cron(job.cron);
 			scheduledJobs[jobCount] = scheduler[jobCount].schedule(callBacks[jobCount]);
@@ -83,7 +68,6 @@ app.put('/jobs', function(req, res) {
 
 app.post('/state/:id', function(req, res) {
 	var id = req.params.id;
-	console.log(id);
 	try {
 			if(jobs[id].state == RUNNING)
 			{
@@ -100,40 +84,91 @@ app.post('/state/:id', function(req, res) {
   res.send({ jobs: jobs });
 });
 
-function callBack_0()
+function getAuth(user, pass)
 {
-		var job = jobs[0]
-    console.log('handle job 0 ' + job.operation);
-    /*
-    request(options_GET, function (error, response, body) {
-      console.log(response.statusCode);
-    });
-    */
+	return new Buffer(user + ':' + pass).toString('base64');
 }
 
-function callBack_1()
+function getOptionsInfo(endpoint, service, auth, tenant)
 {
-		var job = jobs[1]
-		console.log('handle job 1 ' + job.operation);
+	var options = {
+    url: endpoint + '/paas/service/dbcs/api/v1.1/instances/' + tenant + '/' + service,
+    method: 'GET',
+    headers: {
+        Authorization: 'Basic ' + auth,
+        'Content-Type': 'application/json',
+        'X-ID-TENANT-NAME': tenant
+    }
+	}
+	return options;
+};
+
+function getOptionsStart(endpoint, service, auth, tenant)
+{
+	var options = {
+    url: endpoint + '/paas/service/dbcs/api/v1.1/instances/' + tenant + '/' + service,
+    method: 'POST',
+    headers: {
+        Authorization: 'Basic ' + auth,
+        'Content-Type': 'application/json',
+        'X-ID-TENANT-NAME': tenant
+    },
+    body: {
+        'lifecycleState' : 'Start'
+    },
+    json: true
+	}
+	return options;
+};
+
+function getOptionsStop(endpoint, service, auth, tenant)
+{
+	var options = {
+    url: endpoint + '/paas/service/dbcs/api/v1.1/instances/' + tenant + '/' + service,
+    method: 'POST',
+    headers: {
+        Authorization: 'Basic ' + auth,
+        'Content-Type': 'application/json',
+        'X-ID-TENANT-NAME': tenant
+    },
+    body: {
+        'lifecycleState' : 'Stop'
+    },
+    json: true
+	}
+	return options;
+};
+
+function handleJob(job)
+{
+	console.log('Running ' + job.name + ' ' + job.operation);
+	console.log(job.options);
+	request(job.options, function (error, response, body) {
+		if(response)
+		{
+				console.log(response.statusCode);
+				job.status = response.statusCode;
+		}
+		if(error)
+		{
+				 console.log(error);
+				 job.status = error.message;
+		}
+		if(body) console.log(body);
+	});
 }
 
-function callBack_2()
-{
-		var job = jobs[2]
-		console.log('handle job 2 ' + job.operation);
-}
+// As many callbacks as there are maximum jobs
 
-function callBack_3()
-{
-		var job = jobs[3]
-		console.log('handle job 3 ' + job.operation);
-}
+function callBack_0() { handleJob(jobs[0]); }
 
-function callBack_4()
-{
-		var job = jobs[4]
-		console.log('handle job 4 ' + job.operation);
-}
+function callBack_1() { handleJob(jobs[1]); }
+
+function callBack_2() { handleJob(jobs[2]); }
+
+function callBack_3() { handleJob(jobs[3]); }
+
+function callBack_4() { handleJob(jobs[4]); }
 
 app.listen(port, function() {
   	console.log('server listening on port ' + port);

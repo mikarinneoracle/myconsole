@@ -1,16 +1,24 @@
-<h2>Schedule</h2>
+<blockquote>
+  This example demonstrates how the Oracle Cloud REST API can be used to manipulate cloud services from a custom console application.
+</blockquote>
 <p>
+<h2>Schedule jobs</h2>
+<p>
+<br>
 <table class="table table-hover">
   <thead>
     <tr>
-      <th>Job cron</th>
+      <th>Name</th>
+      <th>Cron mask</th>
       <th>Operation</th>
       <th>Service</th>
       <th colspan="2">State</th>
+      <th>Status</th>
     </tr>
   </thead>
   <tbody>
     <tr ng-repeat="job in jobs">
+      <td> {{ job.name }} </td>
 			<td> {{ job.cron }} </td>
       <td> {{ job.operation }} </td>
       <td> {{ job.service }} </td>
@@ -23,6 +31,7 @@
             <a ng-href="#/{{$index}}"><button class="btn btn-success">Resume</button></a>
           </div>
       </td>
+      <td> {{ job.status }} </td>
     </tr>
 		<tr ng-if="jobs.length === 0">
 			<td><strong>No jobs found, start by <a ng-href="#/add">adding new</a> </strong></td>
@@ -31,14 +40,14 @@
 </table>
 
 <div ng-if="jobs.length < 5">
-  <a ng-href="#/add"><button class="btn btn-primary">Add new</button></a>
+  <a ng-href="#/add"><button class="btn btn-primary">Add new a new job</button></a>
 </div>
 
 <div ng-if="jobs.length === 5">
-  <a ng-href="#/add"><button class="btn btn-primary disabled">Add new</button></a>
+  <a ng-href="#/add"><button class="btn btn-primary disabled">Add a new job</button></a>
 </div>
 
 <p>
 <br>
 
-{{ 5 - jobs.length }} of 5 jobs available
+{{ 5 - jobs.length }} of maximum 5 jobs available
