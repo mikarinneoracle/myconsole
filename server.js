@@ -79,7 +79,7 @@ app.post('/jobs', function(req, res) {
 	jobs[id] = {"name" : job.name, "cron" : job.cron, "operation" : job.operation,
 										"endpoint" : job.endpoint, "service" : job.service, "state" : RUNNING,
 										"tenant" : job.tenant, "status" : "", "auth" : auth, "options" : options,
-										"message" : "", "id" : id
+										"message" : "", "id" : id, "user" : job.user, "pass" : job.pass
 									};
 	if(job.id == null)
 	{
