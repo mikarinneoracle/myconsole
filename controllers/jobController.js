@@ -4,6 +4,9 @@ app.controller('jobController', function($location, $http, $rootScope, $scope, $
 	{
 		$http.get('/jobs').success(function(response, err) {
 			$scope.jobs = response['jobs'];
+			$scope.date = response['date'];
+			console.log(response['jobs']);
+			console.log(response['date']);
 		});
 	}
 
@@ -49,5 +52,4 @@ app.controller('jobController', function($location, $http, $rootScope, $scope, $
 			});
   }
 
-	$scope.date = new Date();
 });

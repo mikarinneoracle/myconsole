@@ -36,12 +36,12 @@ var scheduler = [];
 var scheduledJobs = [];
 
 app.get('/jobs', function(req, res) {
-  res.send({ jobs: jobs });
+  res.send({ "jobs": jobs , "date": new Date() });
 });
 
 app.get('/job/:id', function(req, res) {
 	var id = req.params.id;
-  res.send({ job: jobs[id] });
+  res.send({ "job": jobs[id], "date": new Date() });
 });
 
 app.post('/jobs', function(req, res) {
@@ -85,7 +85,7 @@ app.post('/jobs', function(req, res) {
 	{
 		jobCount++;
 	}
-  res.send({ jobs: jobs });
+  res.send({ "jobs": jobs, "date": new Date() });
 });
 
 app.post('/state/:id', function(req, res) {
@@ -103,7 +103,7 @@ app.post('/state/:id', function(req, res) {
 		console.log(err.message);
 		return res.status(400).json( { error: err.message });
 	}
-  res.send({ jobs: jobs });
+  res.send({ "jobs": jobs, "date": new Date() });
 });
 
 function getAuth(user, pass)
