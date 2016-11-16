@@ -16,13 +16,18 @@ app.get('/', function(req,res){
 	res.send('index.html')
 });
 
-var jobMaxCount = 5;
+var jobMaxCount = 10;
 var callBacks = [
     function() { callBack_0() },
     function() { callBack_1() },
     function() { callBack_2() },
     function() { callBack_3() },
-    function() { callBack_4() }
+    function() { callBack_4() },
+		function() { callBack_5() },
+		function() { callBack_6() },
+		function() { callBack_7() },
+		function() { callBack_8() },
+		function() { callBack_9() }
 ];
 
 var jobCount = 0;
@@ -41,43 +46,19 @@ app.get('/job/:id', function(req, res) {
 
 app.post('/jobs', function(req, res) {
 	var job = req.body;
+	var auth = getAuth(job.user, job.pass);
+	var id;
 	if(job.id != null)
 	{
-		var auth = getAuth(job.user, job.pass);
-		var options = "";
-		if(job.operation == 'START')
-		{
-			options = getOptionsStart(job.endpoint, job.service, auth, job.tenant);
-		} else if (job.operation == 'STOP')
-		{
-			options = getOptionsStop(job.endpoint, job.service, auth, job.tenant);
-		} else {
-			options = getOptionsInfo(job.endpoint, job.service, auth, job.tenant);
-		}
-		jobs[job.id] = {"name" : job.name, "cron" : job.cron, "operation" : job.operation,
-											"endpoint" : job.endpoint, "service" : job.service, "state" : RUNNING,
-											"tenant" : job.tenant, "status" : "", "auth" : auth, "options" : options,
-											"message" : "", "id" : job.id
-										};
-
-		console.log(jobs);
-										/*
-		try {
-			  scheduler[job.id] = cron(job.cron);
-				scheduledJobs[job.id] = scheduler[job.id].schedule(callBacks[job.id]);
-		} catch(err) {
-			console.log(err.message);
-			return res.status(400).json( { error: err.message });
-		}
-		*/
-	  res.send({ jobs: jobs });
-		return;
+		id = job.id;
+		scheduledJobs[id].stop();
+	} else {
+		if(jobCount == jobMaxCount)
+	  {
+	    return res.status(400).json( { error: "Job max count " + jobMaxCount + " reached." });
+	  }
+		id = jobCount;
 	}
-  if(jobCount == jobMaxCount)
-  {
-    return res.status(400).json( { error: "Job max count " + jobMaxCount + " reached." });
-  }
-	var auth = getAuth(job.user, job.pass);
 	var options = "";
 	if(job.operation == 'START')
 	{
@@ -88,19 +69,22 @@ app.post('/jobs', function(req, res) {
 	} else {
 		options = getOptionsInfo(job.endpoint, job.service, auth, job.tenant);
 	}
-	jobs[jobCount] = {"name" : job.name, "cron" : job.cron, "operation" : job.operation,
-										"endpoint" : job.endpoint, "service" : job.service, "state" : RUNNING,
-										"tenant" : job.tenant, "status" : "", "auth" : auth, "options" : options,
-										"message" : "", "id" : jobCount
-									};
 	try {
-		  scheduler[jobCount] = cron(job.cron);
-			scheduledJobs[jobCount] = scheduler[jobCount].schedule(callBacks[jobCount]);
+		  scheduler[id] = cron(job.cron);
+			scheduledJobs[id] = scheduler[id].schedule(callBacks[id]);
 	} catch(err) {
 		console.log(err.message);
 		return res.status(400).json( { error: err.message });
 	}
-  jobCount++;
+	jobs[id] = {"name" : job.name, "cron" : job.cron, "operation" : job.operation,
+										"endpoint" : job.endpoint, "service" : job.service, "state" : RUNNING,
+										"tenant" : job.tenant, "status" : "", "auth" : auth, "options" : options,
+										"message" : "", "id" : id
+									};
+	if(job.id != null)
+	{
+		jobCount++;
+	}
   res.send({ jobs: jobs });
 });
 
@@ -209,6 +193,16 @@ function callBack_2() { handleJob(jobs[2]); }
 function callBack_3() { handleJob(jobs[3]); }
 
 function callBack_4() { handleJob(jobs[4]); }
+
+function callBack_5() { handleJob(jobs[5]); }
+
+function callBack_6() { handleJob(jobs[6]); }
+
+function callBack_7() { handleJob(jobs[7]); }
+
+function callBack_8() { handleJob(jobs[8]); }
+
+function callBack_9() { handleJob(jobs[9]); }
 
 app.listen(port, function() {
   	console.log('server listening on port ' + port);
