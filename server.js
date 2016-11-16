@@ -176,7 +176,12 @@ function handleJob(job)
 		{
 				console.log(response.statusCode);
 				job.status = response.statusCode;
-				job.message = body;
+				if(body)
+				{
+						job.message = body;
+				} else {
+						job.message = "OK";
+				}
 		}
 		if(error)
 		{
