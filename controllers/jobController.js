@@ -48,4 +48,6 @@ app.controller('jobController', function($location, $http, $rootScope, $scope, $
 				alert(jobs[id].message);
 			});
   }
+
+	$scope.date = new Date();
 });
