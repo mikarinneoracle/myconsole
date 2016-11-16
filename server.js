@@ -8,6 +8,7 @@ var app = express();
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
 
+var log = [];
 var RUNNING = "running";
 var STOPPED = "stopped";
 var PAUSED = "paused";
@@ -36,7 +37,7 @@ var scheduler = [];
 var scheduledJobs = [];
 
 app.get('/jobs', function(req, res) {
-  res.send({ "jobs": jobs , "date": new Date() });
+  res.send({ "jobs": jobs , "date": new Date(), "log" : log });
 });
 
 app.get('/job/:id', function(req, res) {
@@ -163,8 +164,13 @@ function getOptionsStop(endpoint, service, auth, tenant)
 
 function handleJob(job)
 {
-	console.log('Running ' + job.name + ' ' + job.operation);
+	console.log('Running ' + job.name + ' ' + job.operation + ' ' + job.cron);
 	console.log(job.options);
+	if(log.length > 100)
+	{
+		log = [];
+	}
+	log.push('Running ' + job.name + ' ' + job.operation + ' ' + job.cron);
 	request(job.options, function (error, response, body) {
 		if(response)
 		{
