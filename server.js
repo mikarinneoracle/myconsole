@@ -81,7 +81,7 @@ app.post('/jobs', function(req, res) {
 										"tenant" : job.tenant, "status" : "", "auth" : auth, "options" : options,
 										"message" : "", "id" : id
 									};
-	if(job.id != null)
+	if(job.id == null)
 	{
 		jobCount++;
 	}
