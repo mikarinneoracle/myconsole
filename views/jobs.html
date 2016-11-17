@@ -17,6 +17,7 @@
       <th>Service</th>
       <th colspan="2">State</th>
       <th>Status</th>
+      <th>Last execution</th>
     </tr>
   </thead>
   <tbody>
@@ -35,6 +36,7 @@
           </div>
       </td>
       <td><span class="badge" style="cursor: pointer" ng-click="showAlert($index)">{{ job.status }}</badge></td>
+      <td>{{ job.last | date:'dd.MM.yyyy HH:mm:ss' }}</td>
     </tr>
 		<tr ng-if="jobs.length === 0">
 			<td><strong>No jobs found, start by <a ng-href="#/add">adding new</a> </strong></td>

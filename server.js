@@ -91,7 +91,7 @@ app.post('/jobs', function(req, res) {
 	jobs[id] = {"name" : job.name, "cron" : job.cron, "operation" : job.operation,
 										"endpoint" : job.endpoint, "service" : job.service, "state" : RUNNING,
 										"tenant" : job.tenant, "status" : "", "auth" : auth, "options" : options,
-										"message" : "", "id" : id, "user" : job.user, "pass" : job.pass
+										"message" : "", "id" : id, "user" : job.user, "pass" : job.pass, "last" : ""
 									};
 	if(job.id == null)
 	{
@@ -183,6 +183,7 @@ function handleJob(job)
 	}
 	log.push('Running ' + job.name + ' ' + job.operation + ' ' + job.cron);
 	request(job.options, function (error, response, body) {
+		job.last = new Date();
 		if(response)
 		{
 				console.log(response.statusCode);
