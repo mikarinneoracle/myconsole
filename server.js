@@ -2,20 +2,31 @@ var cron = require('croner');
 var request = require('request');
 var express = require('express');
 var bodyParser = require('body-parser');
+var auth = require('basic-auth');
 var port = process.env.PORT;
+var username = process.env.USER || 'demo';
+var password = process.env.PASS || 'demo';
 var app = express();
 
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
 
+app.use(function(req, res, next) {
+    var user = auth(req);
+
+    if (user === undefined || user['name'] !== username || user['pass'] !== password) {
+        res.statusCode = 401;
+        res.setHeader('WWW-Authenticate', 'Basic realm="Myconsole"');
+        res.end('Unauthorized');
+    } else {
+        next();
+    }
+});
+
 var log = [];
 var RUNNING = "running";
 var STOPPED = "stopped";
 var PAUSED = "paused";
-
-app.get('/', function(req,res){
-	res.send('index.html')
-});
 
 var jobMaxCount = 10;
 var callBacks = [

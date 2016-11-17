@@ -9,6 +9,7 @@
   "author": "Mika Rinne, ORACLE CORP.",
   "license": "ISC",
   "dependencies": {
+    "basic-auth": "^1.0.4",
     "body-parser": "^1.15.2",
     "croner": "^1.1.12",
     "express": "^4.14.0",
