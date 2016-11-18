@@ -7,6 +7,8 @@ var port = process.env.PORT;
 var username = process.env.USER || 'demo';
 var password = process.env.PASS || 'demo';
 var app = express();
+var MongoClient = require('mongodb').MongoClient;
+var mongodb;
 
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
@@ -46,6 +48,36 @@ var jobCount = 0;
 var jobs = [];
 var scheduler = [];
 var scheduledJobs = [];
+
+MongoClient.connect('mongodb://localhost:27017/console', function(err, db) {
+	if(err)
+	{
+		console.log(err);
+	}
+  console.log("Connected successfully to mongodb");
+	mongodb = db;
+	var collection = mongodb.collection('documents');
+	collection.find({}).toArray(function(err, persistedJobs) {
+    if(err)
+		{
+			console.log(err);
+		} else {
+			jobs = persistedJobs;
+			jobCount = jobs.length;
+			// Kick-off schedulers
+			for(i = 0; i < jobCount; i++)
+			{
+				try {
+					  scheduler[i] = cron(jobs[i].cron);
+						scheduledJobs[i] = scheduler[i].schedule(callBacks[i]);
+						console.log("Kicked off job " + jobs[i].id);
+				} catch(err) {
+					console.log(err.message);
+				}
+			}
+		}
+  });
+});
 
 app.get('/jobs', function(req, res) {
   res.send({ "jobs": jobs , "date": new Date(), "log" : log });
@@ -97,6 +129,17 @@ app.post('/jobs', function(req, res) {
 	{
 		jobCount++;
 	}
+	// Persist to database
+	var collection = mongodb.collection('documents');
+	collection.insertMany(jobs, function(err, r) {
+    if(err)
+		{
+				console.log(err);
+		} else {
+			console.log("Inserted " + r.insertedCount);
+		}
+
+  });
   res.send({ "jobs": jobs, "date": new Date() });
 });
 
