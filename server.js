@@ -71,6 +71,10 @@ MongoClient.connect('mongodb://localhost:27017/console', function(err, db) {
 					  scheduler[i] = cron(jobs[i].cron);
 						scheduledJobs[i] = scheduler[i].schedule(callBacks[i]);
 						console.log("Kicked off job " + jobs[i].id);
+						if(jobs[i].state == PAUSED)
+						{
+							scheduledJobs[i].pause();
+						}
 				} catch(err) {
 					console.log(err.message);
 				}
@@ -131,6 +135,7 @@ app.post('/jobs', function(req, res) {
 	}
 	// Persist to database
 	var collection = mongodb.collection('documents');
+	collection.remove();
 	collection.insertMany(jobs, function(err, r) {
     if(err)
 		{
