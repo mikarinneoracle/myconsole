@@ -6,6 +6,7 @@ var auth = require('basic-auth');
 var port = process.env.PORT;
 var username = process.env.USER || 'demo';
 var password = process.env.PASS || 'demo';
+var mongodb_url = process.env.MONGODB || 'localhost:27017';
 var app = express();
 var MongoClient = require('mongodb').MongoClient;
 var mongodb;
@@ -49,39 +50,43 @@ var jobs = [];
 var scheduler = [];
 var scheduledJobs = [];
 
-MongoClient.connect('mongodb://localhost:27017/console', function(err, db) {
-	if(err)
-	{
-		console.log(err);
-	}
-  console.log("Connected successfully to mongodb");
-	mongodb = db;
-	var collection = mongodb.collection('documents');
-	collection.find({}).toArray(function(err, persistedJobs) {
-    if(err)
+if(mongodb_url)
+{
+	MongoClient.connect('mongodb://' + mongodb_url + '/console', function(err, db) {
+		if(err)
 		{
 			console.log(err);
-		} else {
-			jobs = persistedJobs;
-			jobCount = jobs.length;
-			// Kick-off schedulers
-			for(i = 0; i < jobCount; i++)
+			return;
+		}
+	  console.log("Connected successfully to mongodb");
+		mongodb = db;
+		var collection = mongodb.collection('documents');
+		collection.find({}).toArray(function(err, persistedJobs) {
+	    if(err)
 			{
-				try {
-					  scheduler[i] = cron(jobs[i].cron);
-						scheduledJobs[i] = scheduler[i].schedule(callBacks[i]);
-						console.log("Kicked off job " + jobs[i].id);
-						if(jobs[i].state == PAUSED)
-						{
-							scheduledJobs[i].pause();
-						}
-				} catch(err) {
-					console.log(err.message);
+				console.log(err);
+			} else {
+				jobs = persistedJobs;
+				jobCount = jobs.length;
+				// Kick-off schedulers
+				for(i = 0; i < jobCount; i++)
+				{
+					try {
+						  scheduler[i] = cron(jobs[i].cron);
+							scheduledJobs[i] = scheduler[i].schedule(callBacks[i]);
+							console.log("Kicked off job " + jobs[i].id);
+							if(jobs[i].state == PAUSED)
+							{
+								scheduledJobs[i].pause();
+							}
+					} catch(err) {
+						console.log(err.message);
+					}
 				}
 			}
-		}
-  });
-});
+	  });
+	});
+}
 
 app.get('/jobs', function(req, res) {
   res.send({ "jobs": jobs , "date": new Date(), "log" : log });
@@ -134,17 +139,10 @@ app.post('/jobs', function(req, res) {
 		jobCount++;
 	}
 	// Persist to database
-	var collection = mongodb.collection('documents');
-	collection.remove();
-	collection.insertMany(jobs, function(err, r) {
-    if(err)
-		{
-				console.log(err);
-		} else {
-			console.log("Inserted " + r.insertedCount);
-		}
-
-  });
+	if(mongodb)
+	{
+		persist();
+	}
   res.send({ "jobs": jobs, "date": new Date() });
 });
 
@@ -163,6 +161,7 @@ app.post('/state/:id', function(req, res) {
 		console.log(err.message);
 		return res.status(400).json( { error: err.message });
 	}
+	persist();
   res.send({ "jobs": jobs, "date": new Date() });
 });
 
@@ -250,6 +249,20 @@ function handleJob(job)
 				 job.message = error.message;
 		}
 		if(body) console.log(body);
+	});
+}
+
+function persist()
+{
+	var collection = mongodb.collection('documents');
+	collection.remove();
+	collection.insertMany(jobs, function(err, r) {
+		if(err)
+		{
+				console.log(err);
+		} else {
+			console.log("Inserted " + r.insertedCount);
+		}
 	});
 }
 
