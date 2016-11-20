@@ -161,7 +161,10 @@ app.post('/state/:id', function(req, res) {
 		console.log(err.message);
 		return res.status(400).json( { error: err.message });
 	}
-	persist();
+	if(mongodb)
+	{
+		persist();
+	}
   res.send({ "jobs": jobs, "date": new Date() });
 });
 
