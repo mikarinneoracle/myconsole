@@ -7,6 +7,8 @@ var port = process.env.PORT;
 var username = process.env.USER || 'demo';
 var password = process.env.PASS || 'demo';
 var mongodb_url = process.env.MONGODB || 'localhost:27017';
+var mongodb_user = process.env.MONGODB_USER || '';
+var mongodb_pass = process.env.MONGODB_PASS || '';
 var app = express();
 var MongoClient = require('mongodb').MongoClient;
 var mongodb;
@@ -58,7 +60,7 @@ if(mongodb_url)
 			console.log(err);
 			return;
 		}
-	  console.log("Connected successfully to mongodb");
+	  console.log("Connected successfully to mongodb at " + mongodb_url);
 		db.admin().authenticate('console', 'console1', function(err, res)
 		{
 			if(err)
