@@ -61,7 +61,7 @@ if(mongodb_url)
 			return;
 		}
 	  console.log("Connected successfully to mongodb at " + mongodb_url);
-		db.admin().authenticate('console', 'console1', function(err, res)
+		db.admin().authenticate(mongodb_user, mongodb_pass, function(err, res)
 		{
 			if(err)
 			{
