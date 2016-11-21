@@ -59,32 +59,40 @@ if(mongodb_url)
 			return;
 		}
 	  console.log("Connected successfully to mongodb");
-		mongodb = db;
-		var collection = mongodb.collection('documents');
-		collection.find({}).toArray(function(err, persistedJobs) {
-	    if(err)
+		db.admin().authenticate('console', 'console1', function(err, res)
+		{
+			if(err)
 			{
 				console.log(err);
-			} else {
-				jobs = persistedJobs;
-				jobCount = jobs.length;
-				// Kick-off schedulers
-				for(i = 0; i < jobCount; i++)
+				return;
+			}
+			mongodb = db;
+			var collection = mongodb.collection('documents');
+			collection.find({}).toArray(function(err, persistedJobs) {
+				if(err)
 				{
-					try {
-						  scheduler[i] = cron(jobs[i].cron);
-							scheduledJobs[i] = scheduler[i].schedule(callBacks[i]);
-							console.log("Kicked off job " + jobs[i].id);
-							if(jobs[i].state == PAUSED)
-							{
-								scheduledJobs[i].pause();
-							}
-					} catch(err) {
-						console.log(err.message);
+					console.log(err);
+				} else {
+					jobs = persistedJobs;
+					jobCount = jobs.length;
+					// Kick-off schedulers
+					for(i = 0; i < jobCount; i++)
+					{
+						try {
+								scheduler[i] = cron(jobs[i].cron);
+								scheduledJobs[i] = scheduler[i].schedule(callBacks[i]);
+								console.log("Kicked off job " + jobs[i].id);
+								if(jobs[i].state == PAUSED)
+								{
+									scheduledJobs[i].pause();
+								}
+						} catch(err) {
+							console.log(err.message);
+						}
 					}
 				}
-			}
-	  });
+			});
+		});
 	});
 }
 
