@@ -25,7 +25,7 @@
       <td> <a ng-href="#/{{ job.id }}"> {{ job.name }} </a> </td>
 			<td> {{ job.cron }} </td>
       <td> {{ job.operation }} </td>
-      <td> {{ job.service }} </td>
+      <td> {{ job.type }}/{{ job.service }} </td>
       <td> {{ job.state }} </td>
       <td>
           <div ng-if="job.state == 'running'">

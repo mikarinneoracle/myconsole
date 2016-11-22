@@ -6,46 +6,74 @@
 	<br>
 
   <div>
-		<form ng-submit="save(job)" ng-controller="jobController">
+		<form ng-submit="save(job)" ng-controller="jobController" class="form-horizontal" role="form">
       <div class="form-group">
-				<label for="cron">Name</label>
-			  <input class="form-control" type="text" id="name" ng-model="job.name" name="name" placeholder="name"/>
+				<label class="col-md-2 control-label" for="name">Job name</label>
+        <div class="col-md-6">
+			       <input class="form-control" type="text" id="name" ng-model="job.name" name="name" placeholder="name"/>
+        </div>
       </div>
 			<div class="form-group">
-				<label for="cron">Cron mask, for example */30 * * * * *</label>
-			  <input class="form-control" type="text" id="cron" ng-model="job.cron" name="cron" placeholder="*/5 * * * * *"/>
+				<label class="col-md-2 control-label" for="cron">Cron mask</label>
+        <div class="col-md-6">
+          <input class="form-control" type="text" id="cron" ng-model="job.cron" name="cron" placeholder="*/5 * * * * *"/>
+          For example: */30 * * * * *
+        </div>
       </div>
       <div class="form-group">
-				<label for="method">Operation</label>
-			  <select class="form-control" id="operation" ng-model="job.operation" name="operation">
-          <option value="INFO">INFO</option>
-          <option value="START">START</option>
-          <option value="STOP">STOP</option>
-        </select>
+				<label class="col-md-2 control-label" for="operation">Operation</label>
+        <div class="col-md-6">
+  			  <select class="form-control" id="operation" ng-model="job.operation" name="operation">
+            <option value="INFO">INFO</option>
+            <option value="START">START</option>
+            <option value="STOP">STOP</option>
+          </select>
+        </div>
       </div>
       <div class="form-group">
-				<label for="method">Service name (in DBaaS or JaaS)</label>
-			  <input class="form-control" type="text" id="service" ng-model="job.service" name="service" placeholder="service name"/>
+				<label class="col-md-2 control-label" for="service">Service name and type</label>
+        <div class="col-md-6">
+  			  <input class="form-control" type="text" id="service" ng-model="job.service" name="service" placeholder="service name"/>
+        </div>
+        <br><br>
+        <div class="col-md-6">
+          <select class="form-control" id="type" ng-model="job.type" name="type">
+            <option value="dbcs">DBCS</option>
+            <option value="jcs">JCS</option>
+          </select>
+        </div>
 			</div>
       <div class="form-group">
-				<label for="method">Endpoint url</label>
-			  <input class="form-control" type="text" id="endpoint" ng-model="job.endpoint" name="endpoint" placeholder="endpoint url"/>
+				<label class="col-md-2 control-label" for="endpoint">Endpoint url</label>
+        <div class="col-md-6">
+          <input class="form-control" type="text" id="endpoint" ng-model="job.endpoint" name="endpoint" placeholder="endpoint url"/>
+        </div>
 			</div>
       <div class="form-group">
-				<label for="method">Tenant (Domain)</label>
-			  <input class="form-control" type="text" id="tenant" ng-model="job.tenant" name="tenant" placeholder="tenant"/>
-			</div>
+				<label class="col-md-2 control-label" for="tenant">Tenant (Domain)</label>
+        <div class="col-md-6">
+          <input class="form-control" type="text" id="tenant" ng-model="job.tenant" name="tenant" placeholder="tenant"/>
+        </div>
+      </div>
       <div class="form-group">
-				<label for="method">Username</label>
-			  <input class="form-control" type="text" id="username" ng-model="job.user" name="username" placeholder="username"/>
-			</div>
+				<label class="col-md-2 control-label" for="username">Username</label>
+        <div class="col-md-6">
+  			  <input class="form-control" type="text" id="username" ng-model="job.user" name="username" placeholder="username"/>
+  			</div>
+      </div>
       <div class="form-group">
-				<label for="method">Password</label>
-			  <input class="form-control" type="password" id="password" ng-model="job.pass" name="password" placeholder="password"/>
-			</div>
-			<button class="btn btn-primary" type="submit" value="add">Add</button>
-      <a ng-href="#/"><button class="btn btn-default" type="button" value="cancel">Cancel</button></a>
-		</form>
+				<label class="col-md-2 control-label" for="username">Password</label>
+        <div class="col-md-6">
+  			  <input class="form-control" type="password" id="password" ng-model="job.pass" name="password" placeholder="password"/>
+        </div>
+      </div>
+      <div class="col-md-8 form-group pull-left">
+        <div class="col-md-8">
+    			<button class="btn btn-primary" type="submit" value="add">Add</button>
+          <a ng-href="#/"><button class="btn btn-default" type="button" value="cancel">Cancel</button></a>
+        </div>
+      </div>
+    </form>
   </div>
 </div>
 

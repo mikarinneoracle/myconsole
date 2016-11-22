@@ -125,12 +125,12 @@ app.post('/jobs', function(req, res) {
 	var options = "";
 	if(job.operation == 'START')
 	{
-		options = getOptionsStart(job.endpoint, job.service, auth, job.tenant);
+		options = getOptionsStart(job.endpoint, job.service, job.type, auth, job.tenant);
 	} else if (job.operation == 'STOP')
 	{
-		options = getOptionsStop(job.endpoint, job.service, auth, job.tenant);
+		options = getOptionsStop(job.endpoint, job.service, job.type, auth, job.tenant);
 	} else {
-		options = getOptionsInfo(job.endpoint, job.service, auth, job.tenant);
+		options = getOptionsInfo(job.endpoint, job.service, job.type, auth, job.tenant);
 	}
 	try {
 		  scheduler[id] = cron(job.cron);
@@ -139,7 +139,7 @@ app.post('/jobs', function(req, res) {
 		console.log(err.message);
 		return res.status(400).json( { error: err.message });
 	}
-	jobs[id] = {"name" : job.name, "cron" : job.cron, "operation" : job.operation,
+	jobs[id] = {"name" : job.name, "cron" : job.cron, "operation" : job.operation, "type" : job.type,
 										"endpoint" : job.endpoint, "service" : job.service, "state" : RUNNING,
 										"tenant" : job.tenant, "status" : "", "auth" : auth, "options" : options,
 										"message" : "", "id" : id, "user" : job.user, "pass" : job.pass, "last" : ""
@@ -183,10 +183,10 @@ function getAuth(user, pass)
 	return new Buffer(user + ':' + pass).toString('base64');
 }
 
-function getOptionsInfo(endpoint, service, auth, tenant)
+function getOptionsInfo(endpoint, service, type, auth, tenant)
 {
 	var options = {
-    url: endpoint + '/paas/service/dbcs/api/v1.1/instances/' + tenant + '/' + service,
+    url: endpoint + '/paas/service/' + type + '/api/v1.1/instances/' + tenant + '/' + service,
     method: 'GET',
     headers: {
         Authorization: 'Basic ' + auth,
@@ -197,10 +197,10 @@ function getOptionsInfo(endpoint, service, auth, tenant)
 	return options;
 };
 
-function getOptionsStart(endpoint, service, auth, tenant)
+function getOptionsStart(endpoint, service, type, auth, tenant)
 {
 	var options = {
-    url: endpoint + '/paas/service/dbcs/api/v1.1/instances/' + tenant + '/' + service,
+    url: endpoint + '/paas/service/' + type + '/api/v1.1/instances/' + tenant + '/' + service,
     method: 'POST',
     headers: {
         Authorization: 'Basic ' + auth,
@@ -215,10 +215,10 @@ function getOptionsStart(endpoint, service, auth, tenant)
 	return options;
 };
 
-function getOptionsStop(endpoint, service, auth, tenant)
+function getOptionsStop(endpoint, service, type, auth, tenant)
 {
 	var options = {
-    url: endpoint + '/paas/service/dbcs/api/v1.1/instances/' + tenant + '/' + service,
+    url: endpoint + '/paas/service/' + type + '/api/v1.1/instances/' + tenant + '/' + service,
     method: 'POST',
     headers: {
         Authorization: 'Basic ' + auth,

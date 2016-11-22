@@ -29,6 +29,12 @@ app.controller('jobController', function($location, $http, $rootScope, $scope, $
 			$http.get('/job/' + $routeParams.id).success(function(response, err) {
 				$scope.job = response['job'];
 			});
+	} else //if($location.path() == '/add')
+	{
+		  // Add job defaults
+			$scope.job = {};
+			$scope.job.type = 'dbcs';
+			$scope.job.operation = 'INFO';
 	}
 
 	$scope.changeState = function (id) {
