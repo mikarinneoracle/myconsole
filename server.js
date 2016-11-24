@@ -273,8 +273,6 @@ function persist()
 		if(err)
 		{
 				console.log(err);
-		} else {
-			console.log("Inserted " + r.insertedCount);
 		}
 	});
 }
