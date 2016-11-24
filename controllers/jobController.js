@@ -5,8 +5,6 @@ app.controller('jobController', function($location, $http, $rootScope, $scope, $
 		$http.get('/jobs').success(function(response, err) {
 			$scope.jobs = response['jobs'];
 			$scope.date = response['date'];
-			$scope.log = response['log'];
-			console.log(response['log']);
 		});
 	}
 

@@ -99,7 +99,7 @@ if(mongodb_url)
 }
 
 app.get('/jobs', function(req, res) {
-  res.send({ "jobs": jobs , "date": new Date(), "log" : log });
+  res.send({ "jobs": jobs , "date": new Date() });
 });
 
 app.get('/job/:id', function(req, res) {
@@ -237,11 +237,6 @@ function handleJob(job)
 {
 	console.log('Running ' + job.name + ' ' + job.operation + ' ' + job.cron);
 	console.log(job.options);
-	if(log.length > 100)
-	{
-		log = [];
-	}
-	log.push('Running ' + job.name + ' ' + job.operation + ' ' + job.cron);
 	request(job.options, function (error, response, body) {
 		job.last = new Date();
 		if(response)
@@ -254,12 +249,16 @@ function handleJob(job)
 				} else {
 						job.message = "OK";
 				}
+				logRow = {"job": job.name, "cron": job.cron, "result": 'success', "status": job.status, "message": job.message};
+				persistLogRow(logRow);
 		}
 		if(error)
 		{
 				 console.log(error);
 				 job.status = 'ERR';
 				 job.message = error.message;
+				 logRow = {"job": job.name, "cron": job.cron, "result": 'fail', "status": job.status, "message": job.message};
+				 persistLogRow(logRow);
 		}
 		if(body) console.log(body);
 	});
@@ -270,6 +269,19 @@ function persist()
 	var collection = mongodb.collection('documents');
 	collection.remove();
 	collection.insertMany(jobs, function(err, r) {
+		if(err)
+		{
+				console.log(err);
+		}
+	});
+}
+
+function persistLogRow(row)
+{
+	console.log("PERSISTING LOG");
+	console.log(logRow);
+	var collection = mongodb.collection('log');
+	collection.insert(row, function(err, r) {
 		if(err)
 		{
 				console.log(err);
