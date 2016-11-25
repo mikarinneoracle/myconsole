@@ -102,6 +102,24 @@ app.get('/jobs', function(req, res) {
   res.send({ "jobs": jobs , "date": new Date() });
 });
 
+app.get('/log', function(req, res) {
+	if(mongodb)
+	{
+		var collection = mongodb.collection('log');
+		collection.find({}).toArray(function(err, persistedLog) {
+			if(err)
+			{
+				console.log(err);
+			} else {
+				var log = persistedLog;
+				res.send({ "log": log });
+			}
+		});
+	} else {
+		return res.status(400).json( { error: "no access log, mongodb not configured" });
+	}
+});
+
 app.get('/job/:id', function(req, res) {
 	var id = req.params.id;
   res.send({ "job": jobs[id], "date": new Date() });
@@ -278,7 +296,6 @@ function persist()
 
 function persistLogRow(row)
 {
-	console.log("PERSISTING LOG");
 	console.log(logRow);
 	var collection = mongodb.collection('log');
 	collection.insert(row, function(err, r) {
