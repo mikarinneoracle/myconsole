@@ -13,6 +13,8 @@ var app = express();
 var MongoClient = require('mongodb').MongoClient;
 var mongodb;
 
+module.exports = app;
+
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
 
