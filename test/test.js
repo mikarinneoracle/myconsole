@@ -3,6 +3,7 @@ var assert = require('assert');
 var request = require('supertest');
 var username = process.env.USER || 'demo';
 var password = process.env.PASS || 'demo';
+var testFail = process.env.TEST_FAIL || false;
 
 describe('basic tests', function() {
   var lastUser;
@@ -16,6 +17,7 @@ describe('basic tests', function() {
           if (err) return done(err);
           var result = res.body;
           console.log(result);
+          assert.equal(testFail, false);
           done();
         });
   });
