@@ -1,8 +1,10 @@
 {
   "runtime":{
-    "majorVersion":"0.12"
+    "majorVersion":"6.3"
   },
   "command": "node server.js",
   "release": {},
-  "notes": ""
+  "notes": "a sample REST application",
+  "mode": "rolling",
+  "isClustered": "true"
 }
