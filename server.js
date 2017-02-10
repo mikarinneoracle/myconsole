@@ -107,7 +107,12 @@ app.get('/jobs', function(req, res) {
 app.get('/log', function(req, res) {
 	if(mongodb)
 	{
-		var collection = mongodb.collection('log');
+    try {
+		    var collection = mongodb.collection('log');
+    } catch(err) {
+      console.log(err.message);
+      return res.status(400).json( { error: "log does not yet exist" });
+    }
 		collection.find({}).toArray(function(err, persistedLog) {
 			if(err)
 			{
@@ -149,6 +154,9 @@ app.post('/jobs', function(req, res) {
 	} else if (job.operation == 'STOP')
 	{
 		options = getOptionsStop(job.endpoint, job.service, job.type, auth, job.tenant);
+  } else if (job.operation == 'DELETE')
+  {
+    options = getOptionsDelete(job.endpoint, job.service, job.type, auth, job.tenant);
 	} else {
 		options = getOptionsInfo(job.endpoint, job.service, job.type, auth, job.tenant);
 	}
@@ -253,6 +261,26 @@ function getOptionsStop(endpoint, service, type, auth, tenant)
 	return options;
 };
 
+function getOptionsDelete(endpoint, service, type, auth, tenant)
+{
+	var options = {
+    url: endpoint + '/paas/service/' + type + '/api/v1.1/instances/' + tenant + '/' + service,
+    method: 'PUT',
+    headers: {
+        Authorization: 'Basic ' + auth,
+        'Content-Type': 'application/json',
+        'X-ID-TENANT-NAME': tenant
+    },
+    body: {
+      'dbaName': 'SYS',
+      'dbaPassword': 'Ach1z0#d',
+      'forceDelete': 'true'
+    },
+    json: true
+	}
+	return options;
+};
+
 function handleJob(job)
 {
 	console.log('Running ' + job.name + ' ' + job.operation + ' ' + job.cron);
@@ -299,7 +327,12 @@ function persist()
 function persistLogRow(row)
 {
 	console.log(logRow);
-	var collection = mongodb.collection('log');
+  try {
+      var collection = mongodb.collection('log');
+  } catch(err) {
+    console.log(err.message);
+    return;
+  }
 	collection.insert(row, function(err, r) {
 		if(err)
 		{
